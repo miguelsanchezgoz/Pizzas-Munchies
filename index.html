@@ -119,6 +119,16 @@
                 <input type="number" id="cash-amount" placeholder="Ej. 200, 500...">
             </div>
 
+            <div id="transfer-info" style="display:none; margin-top:15px; background:#333; padding:10px; border-radius:8px; border:1px solid #ffce00;">
+                <p style="margin:0; font-size:0.9rem; color:#ffce00; text-align:center;">DATOS BANCARIOS</p>
+                <p style="margin:5px 0; font-size:1.1rem; color:white; font-weight:bold; text-align:center; letter-spacing:1px;">
+                    127790013208161484
+                </p>
+                <p style="margin:0; font-size:0.9rem; color:#ccc; text-align:center;">
+                    BANCO AZTECA<br>Carlos Adrian Cano Palomeque
+                </p>
+            </div>
+
             <p id="payment-note" style="font-size:0.8rem; color:#888; margin-top:10px; font-style: italic;">
                 *El repartidor cobrará al entregar.
             </p>
@@ -159,7 +169,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderPizzas();
             renderHalfHalfBuilder();
-            toggleCashInput(); // Ajustar visibilidad inicial del pago
+            toggleCashInput(); 
         });
 
         // 1. RENDERIZAR LISTA NORMAL
@@ -300,16 +310,20 @@
         function toggleCashInput() {
             const method = document.getElementById('payment-method').value;
             const cashContainer = document.getElementById('cash-input-container');
+            const transferContainer = document.getElementById('transfer-info');
             const note = document.getElementById('payment-note');
+
+            // Resetear vistas
+            cashContainer.style.display = 'none';
+            transferContainer.style.display = 'none';
 
             if (method === 'Efectivo') {
                 cashContainer.style.display = 'block';
                 note.innerText = "*El repartidor cobrará al entregar.";
             } else if (method === 'Transferencia') {
-                cashContainer.style.display = 'none';
-                note.innerText = "*Te enviaremos la cuenta CLABE por WhatsApp.";
+                transferContainer.style.display = 'block'; // MOSTRAR CLABE
+                note.innerText = "*Envía el comprobante por WhatsApp.";
             } else {
-                cashContainer.style.display = 'none';
                 note.innerText = "*Te enviaremos el Link de Mercado Pago por WhatsApp.";
             }
         }
@@ -360,6 +374,12 @@
 
             mensaje += `\n💰 *TOTAL: $${total}*`;
             mensaje += `\n💳 *Método de Pago:* ${detallePago}`;
+            
+            // LÓGICA NUEVA PARA MENSAJE DE TRANSFERENCIA
+            if (metodoPago === 'Transferencia') {
+                mensaje += `\n\n📄 *Agradecemos compartir comprobante de pago para que se realice su pedido*`;
+            }
+
             mensaje += `\n\n📍 *Dirección:* `;
             mensaje += `\n📝 *Notas:* `;
 

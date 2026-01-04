@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzas Munchie's</title>
+    <style>
+        /* TEMA OSCURO MUNCHIE'S */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: white; margin: 0; padding-bottom: 110px; }
+        
+        /* Header */
+        header { background: #000; color: white; padding: 25px 20px; text-align: center; border-bottom: 4px solid #ff0000; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
+        h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: 1px; text-shadow: 0 0 10px #ff0000; }
+        p.slogan { margin: 5px 0 0; color: #ccc; font-size: 0.9rem; }
+        
+        .menu-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        
+        /* Tarjetas Generales */
+        .card { background: #1e1e1e; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-left: 5px solid #ff0000; }
+        
+        /* Tarjeta Especial Mitad y Mitad */
+        .card-special { border-left: 5px solid #00d2ff; background: #181818; border: 1px solid #333; }
+        .special-title { color: #00d2ff; text-align: center; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+
+        /* Tarjeta de Pago (Verde WhatsApp) */
+        .card-payment { border-left: 5px solid #25D366; background: #181818; }
+
+        /* Textos */
+        .card-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+        .card-info h3 { margin: 0; font-size: 1.3rem; color: #ffce00; text-transform: uppercase; } 
+        .desc { font-size: 0.85rem; color: #aaa; margin-top: 5px; font-style: italic; }
+        .price-tag { font-size: 1.2rem; font-weight: bold; color: white; text-align: right; }
+
+        /* Controles (Selects e Inputs) */
+        select, input { width: 100%; padding: 12px; margin: 8px 0; background: #333; color: white; border: 1px solid #555; border-radius: 8px; font-size: 1rem; outline: none; box-sizing: border-box; }
+        select:focus, input:focus { border-color: #ff0000; }
+        
+        label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-top: 5px; display: block; }
+
+        /* Botones */
+        .btn-add { background: #ff0000; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; text-transform: uppercase; margin-top: 10px; transition: transform 0.1s; }
+        .btn-add:active { transform: scale(0.98); }
+        .btn-add-special { background: linear-gradient(45deg, #0084ff, #00d2ff); }
+        .btn-add-extra { background: #444; }
+
+        /* Barra Inferior Flotante */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #222; padding: 15px 20px; border-top: 2px solid #ff0000; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .total-price { font-weight: 800; font-size: 1.5rem; color: #ffce00; }
+        
+        /* Botón WhatsApp */
+        .btn-whatsapp { background: linear-gradient(45deg, #25D366, #128C7E); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 1rem;}
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PIZZAS MUNCHIE'S</h1>
+        <p class="slogan">🔥 ¡De la vista nace el amor, pero en Munchie's nace el sabor!</p>
+    </header>
+
+    <div class="menu-container" id="menu-list">
+        
+        <div id="half-half-section"></div>
+
+        <h2 style="color: #ffce00; text-align:center; margin-top:30px;">MENU CLÁSICO</h2>
+        <div id="pizzas-section"></div>
+
+        <h2 style="color: #ffce00; text-align:center; margin-top:30px;">EXTRAS</h2>
+        <div class="card" style="border-left-color: #ffce00;">
+            <div class="card-header">
+                <h3 style="color: white;">Ingredientes Extra</h3>
+            </div>
+            
+            <label>1. ¿Qué ingrediente?</label>
+            <select id="extra-ingredient-select">
+                <option value="Queso Extra">🧀 Queso Extra</option>
+                <option value="Peperoni">🍕 Peperoni</option>
+                <option value="Champiñones">🍄 Champiñones</option>
+                <option value="Piña">🍍 Piña</option>
+                <option value="Jamón">🍖 Jamón</option>
+                <option value="Salchicha">🌭 Salchicha</option>
+                <option value="Tocino">🥓 Tocino</option>
+                <option value="Jalapeños">🌶️ Jalapeños</option>
+                <option value="Pimiento">🫑 Pimiento</option>
+                <option value="Cebolla">🧅 Cebolla</option>
+                <option value="Chorizo">🥩 Chorizo</option>
+            </select>
+
+            <label>2. ¿Para qué tamaño de pizza es?</label>
+            <select id="extra-size-select" onchange="actualizarPrecioExtra()">
+                <option value="15" data-label="(Chica)">Chica - $15</option> 
+                <option value="20" data-label="(Mediana)" selected>Mediana - $20</option>
+                <option value="25" data-label="(Grande)">Grande - $25</option>
+                <option value="30" data-label="(Familiar)">Familiar - $30</option>
+            </select>
+            
+            <div id="extra-price-display" class="price-tag" style="color: #ffce00; margin-bottom: 10px;">$20</div>
+
+            <button class="btn-add btn-add-extra" onclick="agregarExtra()">
+                Agregar Extra
+            </button>
+        </div>
+
+        <h2 style="color: #25D366; text-align:center; margin-top:30px;">FORMA DE PAGO</h2>
+        <div class="card card-payment">
+            <div class="card-header">
+                <h3 style="color: white;">¿Cómo deseas pagar?</h3>
+            </div>
+            
+            <label>Selecciona opción:</label>
+            <select id="payment-method" onchange="toggleCashInput()">
+                <option value="Efectivo">💵 Efectivo (Contra entrega)</option>
+                <option value="Transferencia">🏦 Transferencia Bancaria</option>
+                <option value="Link">💳 Tarjeta / Link de Pago</option>
+            </select>
+
+            <div id="cash-input-container">
+                <label style="color: #25D366;">¿Con cuánto vas a pagar? (Para llevar cambio)</label>
+                <input type="number" id="cash-amount" placeholder="Ej. 200, 500...">
+            </div>
+
+            <p id="payment-note" style="font-size:0.8rem; color:#888; margin-top:10px; font-style: italic;">
+                *El repartidor cobrará al entregar.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="cart-bar">
+        <div>
+            <div style="font-size:0.8rem; color:#aaa;">Total estimado:</div>
+            <div class="total-price">$<span id="total-price">0</span></div>
+        </div>
+        <button class="btn-whatsapp" onclick="enviarPedido()">
+            Pedir por WhatsApp 🚀
+        </button>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        const TELEFONO_NEGOCIO = "5219931345971"; 
+        const NOMBRE_NEGOCIO = "Pizzas Munchie's";
+
+        // --- DATOS DEL MENÚ ---
+        const menu = [
+            { id: "peperoni", nombre: "Peperoni", desc: "Peperoni y queso", precios: { CH: 125, M: 155, G: 190, F: 230 } },
+            { id: "pep_esp", nombre: "Peperoni Especial", desc: "Peperoni y champiñones", precios: { CH: 145, M: 185, G: 225, F: 265 } },
+            { id: "hawaiana", nombre: "Hawaiana", desc: "Jamón y piña", precios: { CH: 145, M: 185, G: 225, F: 265 } },
+            { id: "haw_esp", nombre: "Hawaiana Especial", desc: "Tocino, jamón, piña, jalapeños", precios: { CH: 170, M: 210, G: 250, F: 290 } },
+            { id: "mixta", nombre: "Mixta", desc: "Peperoni, champiñones, cebolla, pimiento, chorizo", precios: { CH: 170, M: 210, G: 245, F: 285 } },
+            { id: "carnes", nombre: "Carnes Frías", desc: "Jamón, chorizo, salchicha, peperoni", precios: { CH: 180, M: 220, G: 255, F: 295 } },
+            { id: "mexicana", nombre: "Mexicana", desc: "Salchicha, jalapeños, peperoni, champiñones...", precios: { CH: 180, M: 220, G: 255, F: 295 } },
+            { id: "vegetariana", nombre: "Vegetariana", desc: "4 ingredientes a elegir", precios: { CH: 120, M: 150, G: 185, F: 220 } }
+        ];
+
+        let carrito = [];
+
+        // --- INICIALIZAR ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPizzas();
+            renderHalfHalfBuilder();
+            toggleCashInput(); // Ajustar visibilidad inicial del pago
+        });
+
+        // 1. RENDERIZAR LISTA NORMAL
+        function renderPizzas() {
+            const container = document.getElementById('pizzas-section');
+            menu.forEach(pizza => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-info">
+                            <h3>${pizza.nombre}</h3>
+                            <div class="desc">${pizza.desc}</div>
+                        </div>
+                    </div>
+                    <select id="size-${pizza.id}" onchange="actualizarPrecioCard('${pizza.id}')">
+                        <option value="CH" data-price="${pizza.precios.CH}">Chica - $${pizza.precios.CH}</option>
+                        <option value="M" data-price="${pizza.precios.M}" selected>Mediana - $${pizza.precios.M}</option>
+                        <option value="G" data-price="${pizza.precios.G}">Grande - $${pizza.precios.G}</option>
+                        <option value="F" data-price="${pizza.precios.F}">Familiar - $${pizza.precios.F}</option>
+                    </select>
+                    <button class="btn-add" onclick="agregarPizza('${pizza.id}')">Agregar</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 2. RENDERIZAR MITAD Y MITAD
+        function renderHalfHalfBuilder() {
+            const container = document.getElementById('half-half-section');
+            let optionsHtml = '';
+            menu.forEach(p => { optionsHtml += `<option value="${p.id}">${p.nombre}</option>`; });
+
+            const card = document.createElement('div');
+            card.className = 'card card-special';
+            card.innerHTML = `
+                <div class="special-title">🌗 ARMA TU MITAD Y MITAD</div>
+                <div class="desc" style="text-align:center; margin-bottom:15px;">Se cobra el precio de la mitad de mayor valor.</div>
+                
+                <label>Tamaño:</label>
+                <select id="hh-size" onchange="calcPrecioHH()">
+                    <option value="CH">Chica (6 Rebanadas)</option>
+                    <option value="M">Mediana (8 Rebanadas)</option>
+                    <option value="G" selected>Grande (8 Rebanadas)</option>
+                    <option value="F">Familiar (12 Rebanadas)</option>
+                </select>
+
+                <label>Mitad 1:</label>
+                <select id="hh-p1" onchange="calcPrecioHH()">${optionsHtml}</select>
+
+                <label>Mitad 2:</label>
+                <select id="hh-p2" onchange="calcPrecioHH()">${optionsHtml}</select>
+
+                <div id="hh-price-display" class="price-tag" style="margin: 15px 0; color:#00d2ff;">$0</div>
+
+                <button class="btn-add btn-add-special" onclick="agregarHalfHalf()">
+                    Agregar Mitad y Mitad
+                </button>
+            `;
+            container.appendChild(card);
+            calcPrecioHH(); 
+        }
+
+        // --- LÓGICA DE PRECIOS ---
+        function calcPrecioHH() {
+            const size = document.getElementById('hh-size').value;
+            const id1 = document.getElementById('hh-p1').value;
+            const id2 = document.getElementById('hh-p2').value;
+
+            const p1Obj = menu.find(p => p.id === id1);
+            const p2Obj = menu.find(p => p.id === id2);
+
+            const precio1 = p1Obj.precios[size];
+            const precio2 = p2Obj.precios[size];
+            const precioFinal = Math.max(precio1, precio2);
+
+            document.getElementById('hh-price-display').innerText = `$${precioFinal}`;
+            return { precio: precioFinal, nombre1: p1Obj.nombre, nombre2: p2Obj.nombre, size: size };
+        }
+
+        function agregarHalfHalf() {
+            const datos = calcPrecioHH();
+            const sizeMap = { "CH": "Chica", "M": "Mediana", "G": "Grande", "F": "Familiar" };
+
+            carrito.push({
+                nombre: `MITAD ${datos.nombre1} / MITAD ${datos.nombre2} (${sizeMap[datos.size]})`,
+                precio: datos.precio,
+                tipo: 'especial'
+            });
+            notificar("Pizza Mitad y Mitad agregada");
+            actualizarTotal();
+        }
+
+        function agregarPizza(id) {
+            const select = document.getElementById(`size-${id}`);
+            const size = select.value;
+            const price = parseInt(select.options[select.selectedIndex].dataset.price);
+            const pizzaObj = menu.find(p => p.id === id);
+            const sizeMap = { "CH": "Chica", "M": "Mediana", "G": "Grande", "F": "Familiar" };
+
+            carrito.push({
+                nombre: `${pizzaObj.nombre} (${sizeMap[size]})`,
+                precio: price,
+                tipo: 'normal'
+            });
+            notificar(`${pizzaObj.nombre} agregada`);
+            actualizarTotal();
+        }
+
+        function actualizarPrecioExtra() {
+            const select = document.getElementById('extra-size-select');
+            const precio = select.value;
+            document.getElementById('extra-price-display').innerText = `$${precio}`;
+        }
+
+        function agregarExtra() {
+            const ingSelect = document.getElementById('extra-ingredient-select');
+            const sizeSelect = document.getElementById('extra-size-select');
+            const nombreIng = ingSelect.value;
+            const precio = parseInt(sizeSelect.value);
+            const labelSize = sizeSelect.options[sizeSelect.selectedIndex].dataset.label;
+
+            carrito.push({
+                nombre: `EXTRA: ${nombreIng} ${labelSize}`,
+                precio: precio,
+                tipo: 'extra'
+            });
+            notificar(`Extra ${nombreIng} agregado`);
+            actualizarTotal();
+        }
+
+        // --- CORE & PAGO ---
+        function actualizarTotal() {
+            const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+            document.getElementById('total-price').innerText = total;
+        }
+
+        function toggleCashInput() {
+            const method = document.getElementById('payment-method').value;
+            const cashContainer = document.getElementById('cash-input-container');
+            const note = document.getElementById('payment-note');
+
+            if (method === 'Efectivo') {
+                cashContainer.style.display = 'block';
+                note.innerText = "*El repartidor cobrará al entregar.";
+            } else if (method === 'Transferencia') {
+                cashContainer.style.display = 'none';
+                note.innerText = "*Te enviaremos la cuenta CLABE por WhatsApp.";
+            } else {
+                cashContainer.style.display = 'none';
+                note.innerText = "*Te enviaremos el Link de Mercado Pago por WhatsApp.";
+            }
+        }
+
+        function notificar(msg) {
+            const btn = document.querySelector('.btn-whatsapp');
+            const original = btn.innerHTML;
+            btn.innerHTML = "✅ " + msg;
+            setTimeout(() => btn.innerHTML = original, 1500);
+        }
+
+        function enviarPedido() {
+            if (carrito.length === 0) {
+                alert("⚠️ El carrito está vacío");
+                return;
+            }
+
+            // Datos de Pago
+            const metodoPago = document.getElementById('payment-method').value;
+            const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+            let detallePago = metodoPago;
+
+            if (metodoPago === 'Efectivo') {
+                const conCuanto = document.getElementById('cash-amount').value;
+                if (!conCuanto) {
+                    alert("⚠️ Por favor indica con cuánto vas a pagar para llevar cambio.");
+                    return;
+                }
+                if (parseInt(conCuanto) < total) {
+                    alert("⚠️ El monto con el que pagas es menor al total.");
+                    return;
+                }
+                const cambio = parseInt(conCuanto) - total;
+                detallePago = `Efectivo (Pago con: $${conCuanto} | Cambio: $${cambio})`;
+            }
+
+            let mensaje = `Hola *${NOMBRE_NEGOCIO}*, mi pedido es: \n\n`;
+            
+            carrito.forEach(item => {
+                if(item.tipo === 'especial') {
+                    mensaje += `🌗 *${item.nombre}* - $${item.precio}\n`;
+                } else if (item.tipo === 'extra') {
+                    mensaje += `➕ ${item.nombre} - $${item.precio}\n`;
+                } else {
+                    mensaje += `🍕 ${item.nombre} - $${item.precio}\n`;
+                }
+            });
+
+            mensaje += `\n💰 *TOTAL: $${total}*`;
+            mensaje += `\n💳 *Método de Pago:* ${detallePago}`;
+            mensaje += `\n\n📍 *Dirección:* `;
+            mensaje += `\n📝 *Notas:* `;
+
+            const url = `https://wa.me/${TELEFONO_NEGOCIO}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
